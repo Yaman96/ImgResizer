@@ -12,4 +12,4 @@
 ![ImgResizer](https://github.com/Yaman96/ImgResizer/blob/450bd701fd5886c82a9fd9dcca8fa48fcb824ec4/projectScreenshots/2023-09-17_17-03-41.png)
 
 ## How to use ImgResizer?
-Download the ImgResizer.jar file and double-click it. Jave must be installed.
+Download the ImgResizer.jar file and double-click it. Java must be installed.
