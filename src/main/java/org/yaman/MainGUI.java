@@ -5,12 +5,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.concurrent.ForkJoinPool;
 
 public class MainGUI {
     private JFrame frame;
     private JTextField srcFolderField;
     private JTextField dstFolderField;
-    private JProgressBar progressBar;
+    private static JProgressBar progressBar;
 
 
     public MainGUI() {
@@ -77,15 +78,14 @@ public class MainGUI {
                     @Override
                     protected Void doInBackground() throws Exception {
 
-                        int threadCount = 0;
-                        for (File photo : photos) {
-                            new Thread(new ImgResizer(photo,400,dstFolderPath)).start();
-                            threadCount++;
-                        }
+                        ForkJoinPool pool = new ForkJoinPool();
+                        ImgResizerFJP resizerFJP = new ImgResizerFJP(photos,500,dstFolderPath);
+                        pool.invoke(resizerFJP);
+
                         int progress = 0;
                         while (progress < 100) {
-                            progress = ImgResizer.getReadyPhotosCount() * (100 / threadCount);
-                            if (progress == (100 / threadCount) * threadCount) progress = 100;
+                            progress = ImgResizerFJP.getReadyPhotosCount() * (100 / photos.length);
+                            if (progress == (100 / photos.length) * photos.length) progress = 100;
                             publish(progress);
                         }
                         return null;
@@ -101,7 +101,7 @@ public class MainGUI {
                     @Override
                     protected void done() {
                         progressBar.setValue(0);
-                        ImgResizer.resetReadyPhotosCount();
+                        ImgResizerFJP.resetReadyPhotosCount();
                         JOptionPane.showMessageDialog(frame, "Photos have been successfully resized and saved.");
                     }
                 };
